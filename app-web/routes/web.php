@@ -9,8 +9,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/register', [UsersController::class, 'showFormCreateUser'])->name('users.create');
-
-
+Route::post('/users-store', [UsersController::class, 'store'])->name('users.store');
 
 
 require __DIR__.'/settings.php';
