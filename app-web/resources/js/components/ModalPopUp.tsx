@@ -44,7 +44,7 @@ export default function ModalPopUp({modalType, modalMessage, modalShow, onClose}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg w-full"
                     onClick={onClose}
                 >
-                    Close
+                    Cerrar
                 </button>
             </div>
         </div>

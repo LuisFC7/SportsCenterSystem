@@ -14,6 +14,9 @@ type UserForm = {
     birthdate: string;
     age: number;
     genre: string;
+    schedule:string;
+    hired_date: string;
+    image: File | null;
 }
 
 interface Props {
@@ -31,12 +34,17 @@ export default function Register({ roles }: Props) {
         user_type: 0,
         birthdate: '',
         age: 17,
-        genre: ''
+        genre: '',
+        schedule: '',
+        hired_date:'',
+        image: null
     });
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        post('/users-store');
+        post('/users-store', {
+            forceFormData: true, // 👈 Esto convierte todo en multipart/form-data
+        });
     };
 
     //Para Mensajes de Password
@@ -46,7 +54,7 @@ export default function Register({ roles }: Props) {
     //Para Modal de errores
     const [modalShow, setModalShow] = useState(false);
 
-     useEffect(() => {
+    useEffect(() => {
         if (errors && Object.keys(errors).length > 0) {
         setModalShow(true);
         }
@@ -248,6 +256,52 @@ export default function Register({ roles }: Props) {
                             <option value="female">Femenino</option>
                             <option value="other">Otro</option>
                         </select>
+                    </div>
+
+                    {/* Schedule */}
+                    <div className="flex flex-col font-body">
+                        <label htmlFor="schedule" className="text-white mb-1 font-body">
+                            Horario de trabajo
+                        </label>
+                        <input
+                            type="text"
+                            id="schedule"
+                            name="schedule"
+                            value={data.schedule}
+                            onChange={e => setData('schedule', e.target.value)}
+                            placeholder="Ej. 09:00 - 18:00"
+                            className="p-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    {/* Fecha de contratacion */}
+                    <div className="flex flex-col font-body">
+                        <label htmlFor="hired_date" className="text-white mb-1 font-body">
+                            Fecha de contratacion
+                        </label>
+                        <input
+                            id="hired_date"
+                            type="date"
+                            name="hired_date"
+                            value={data.hired_date}
+                            onChange={e => setData('hired_date', e.target.value)}
+                            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        />
+                    </div>
+
+
+                    {/* Imagen */}
+                    <div className="flex flex-col font-body">
+                        <label htmlFor="image" className="text-white mb-1 font-body">
+                            Foto de perfil
+                        </label>
+                        <input
+                            id="image"
+                            type="file"
+                            accept="image/*"
+                            onChange={e => setData('image', e.target.files ? e.target.files[0] : null)}
+                            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        />
                     </div>
 
                     {/* Botón */}

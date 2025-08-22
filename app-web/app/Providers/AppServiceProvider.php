@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Session;
 
-class AppServiceProvider extends ServiceProvider{
+class AppServiceProvider extends ServiceProvider
+{
     /**
      * Register any application services.
      */
@@ -17,14 +20,25 @@ class AppServiceProvider extends ServiceProvider{
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void{
+    public function boot(): void
+    {
+        // Configuración de contraseñas rules
         Password::defaults(function () {
-            return Password::min(12)        // mínimo 12 caracteres
-                          ->letters()       // al menos una letra
-                          ->mixedCase()    // mayúsculas y minúsculas
-                          ->numbers()      // al menos un número
-                          ->symbols()      // al menos un símbolo
-                          ->uncompromised(); // no estar en filtraciones conocidas
+            return Password::min(12)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->uncompromised();
         });
+
+        // Compartir flash messages con Inertia
+        Inertia::share([
+            'flash' => function () {
+                return [
+                    'message' => Session::get('flash.message')
+                ];
+            },
+        ]);
     }
 }

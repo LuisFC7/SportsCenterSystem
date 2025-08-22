@@ -1,7 +1,31 @@
+import { usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import ModalPopUp from '@/components/ModalPopUp';
+
 export default function welcome() {
-    return (
-        <div style={{ padding: 20 }}>
-            <h1 style={{ color: 'blue' }}>Hola  desde Inertia + React + TSX 🚀</h1>
-        </div>
-    );
+  const { flash } = usePage().props as { flash?: { message?: string } };
+  const [modalShow, setModalShow] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+
+useEffect(() => {
+    if (flash?.message) {
+        setModalMessage(flash.message);
+        setModalShow(true);
+    }
+}, [flash]);
+
+  return (
+    <div>
+      {modalShow && (
+        <ModalPopUp
+          modalType="success"
+          modalMessage={modalMessage}
+          modalShow={modalShow}
+          onClose={() => setModalShow(false)}
+        />
+      )}
+      
+    </div>
+  );
 }
