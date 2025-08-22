@@ -1,6 +1,8 @@
 import { useForm } from '@inertiajs/react';
-import { useState, useRef} from 'react';
+import { useState, useRef, useEffect} from 'react';
 import { FormEvent } from 'react';
+import ModalPopUp from '@/components/ModalPopUp';
+
 
 type UserForm = {
     name: string;
@@ -37,7 +39,18 @@ export default function Register({ roles }: Props) {
         post('/users-store');
     };
 
+    //Para Mensajes de Password
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+    const [showPasswordError, setPasswordEqual] = useState(false);
+
+    //Para Modal de errores
+    const [modalShow, setModalShow] = useState(false);
+
+     useEffect(() => {
+        if (errors && Object.keys(errors).length > 0) {
+        setModalShow(true);
+        }
+    }, [errors]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -82,17 +95,16 @@ export default function Register({ roles }: Props) {
 
                     {/* Contraseña */}
                     <div className="flex flex-col font-body">
-                        {
-                            isPasswordFocused && (
-                                <div className="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+                        {isPasswordFocused && (
+                            <div className="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 mb-2 rounded-md" role="alert">
                                 <p className="font-bold">Importante</p>
-                                <p className="text-sm">La contraseña debe tener 12 caracteres.
-                                    Al menos una mayúscula, una minuscula, un digito y un caracter especial.
-                                    
+                                <p className="text-sm">
+                                    La contraseña debe tener mínimo <strong>12 caracteres</strong>, <br />
+                                    al menos una <strong>mayúscula</strong>, una <strong>minúscula</strong>, <br />
+                                    un <strong>dígito</strong> y un <strong>carácter especial</strong>.
                                 </p>
-                        </div>
-                            )
-                        }
+                            </div>
+                        )}
                         <label htmlFor="password" className="text-white mb-1 font-body">
                             Contraseña
                         </label>
@@ -103,12 +115,25 @@ export default function Register({ roles }: Props) {
                             placeholder="Contraseña"
                             value={data.password}
                             onChange={e => setData('password', e.target.value)}
+                            onFocus= {() => setIsPasswordFocused(true)}
+                            onBlur =  {() => setIsPasswordFocused(false)}
                             className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                         />
                     </div>
 
                     {/* Confirmar Contraseña */}
                     <div className="flex flex-col font-body">
+                        {showPasswordError && (
+                            <div role="alert">
+                                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                                    Error
+                                </div>
+                                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                                    <p>Las contraseñas no coinciden</p>
+                                </div>
+                            </div>
+
+                        )}
                         <label htmlFor="password_confirmation" className="text-white mb-1 font-body">
                             Confirmar Contraseña
                         </label>
@@ -118,7 +143,17 @@ export default function Register({ roles }: Props) {
                             name="password_confirmation"
                             placeholder="Confirmar Contraseña"
                             value={data.password_confirmation}
-                            onChange={e => setData('password_confirmation', e.target.value)}
+                            onChange={e =>{
+                                const value = e.target.value; 
+                                setData('password_confirmation', value)
+
+                                if(value !== "" && value !== data.password){
+                                    setPasswordEqual(true);
+                                }else{
+                                    setPasswordEqual(false);
+                                }
+                            
+                            }}
                             className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                         />
                     </div>
@@ -224,14 +259,14 @@ export default function Register({ roles }: Props) {
                         Registrar
                     </button>
 
-                    {/* Errores */}
-                    {errors && Object.keys(errors).length > 0 && (
-                        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mt-2" role="alert">
-                            <p className="font-messages">Error en el registro</p>
-                            {Object.values(errors).map((err, i) => (
-                                <p key={i}>{err}</p>
-                            ))}
-                        </div>
+                    {/* Modal de errores */}
+                    {modalShow && (
+                        <ModalPopUp
+                        modalType="error"
+                        modalMessage={"Error:\n" + Object.values(errors).join("\n")}
+                        modalShow={modalShow}
+                        onClose={() => setModalShow(false)} // 👈 aquí sí se cierra bien
+                        />
                     )}
 
                     
